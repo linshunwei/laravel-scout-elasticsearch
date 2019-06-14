@@ -309,7 +309,17 @@ class FilterBuilder extends Builder
 	 * @param int|string $distance
 	 * @return $this
 	 */
-	public function whereGeoDistance($field, $value, $distance, $order = 'asc', $unit = 'km', $distance_type = 'arc')
+	/**
+	 * Add a whereGeoDistance condition.
+	 *
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-query.html Geo distance query
+	 *
+	 * @param string $field
+	 * @param string|array $value
+	 * @param int|string $distance
+	 * @return $this
+	 */
+	public function whereGeoDistance($field, $value, $distance, $order = '', $unit = 'km', $distance_type = 'arc')
 	{
 		$this->wheres['must'][] = [
 			'geo_distance' => [
@@ -318,15 +328,16 @@ class FilterBuilder extends Builder
 			]
 		];
 
-		$this->orders[] = [
-			"_geo_distance" => [
-				$field => $value,
-				"order" => $order,
-				"unit" => $unit,
-				"distance_type" => $distance_type
-			]
-		];
-
+		if ($order) {
+			$this->orders[] = [
+				"_geo_distance" => [
+					$field => $value,
+					"order" => $order,
+					"unit" => $unit,
+					"distance_type" => $distance_type
+				]
+			];
+		}
 		return $this;
 	}
 
@@ -339,13 +350,24 @@ class FilterBuilder extends Builder
 	 * @param array $value
 	 * @return $this
 	 */
-	public function whereGeoBoundingBox($field, array $value)
+	public function whereGeoBoundingBox($field, array $value, $order = '', $unit = 'km', $distance_type = 'arc')
 	{
 		$this->wheres['must'][] = [
 			'geo_bounding_box' => [
 				$field => $value,
 			],
 		];
+
+		if ($order) {
+			$this->orders[] = [
+				"_geo_distance" => [
+					$field => $value,
+					"order" => $order,
+					"unit" => $unit,
+					"distance_type" => $distance_type
+				]
+			];
+		}
 
 		return $this;
 	}
