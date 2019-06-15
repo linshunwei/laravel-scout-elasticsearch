@@ -319,7 +319,7 @@ class FilterBuilder extends Builder
 	 * @param int|string $distance
 	 * @return $this
 	 */
-	public function whereGeoDistance($field, $value, $distance, $order = '', $unit = 'km', $distance_type = 'arc')
+	public function whereGeoDistance($field, $value, $distance)
 	{
 		$this->wheres['must'][] = [
 			'geo_distance' => [
@@ -328,16 +328,6 @@ class FilterBuilder extends Builder
 			]
 		];
 
-		if ($order) {
-			$this->orders[] = [
-				"_geo_distance" => [
-					$field => $value,
-					"order" => $order,
-					"unit" => $unit,
-					"distance_type" => $distance_type
-				]
-			];
-		}
 		return $this;
 	}
 
@@ -350,24 +340,13 @@ class FilterBuilder extends Builder
 	 * @param array $value
 	 * @return $this
 	 */
-	public function whereGeoBoundingBox($field, array $value, $order = '', $unit = 'km', $distance_type = 'arc')
+	public function whereGeoBoundingBox($field, array $value)
 	{
 		$this->wheres['must'][] = [
 			'geo_bounding_box' => [
 				$field => $value,
 			],
 		];
-
-		if ($order) {
-			$this->orders[] = [
-				"_geo_distance" => [
-					$field => $value,
-					"order" => $order,
-					"unit" => $unit,
-					"distance_type" => $distance_type
-				]
-			];
-		}
 
 		return $this;
 	}
@@ -427,6 +406,26 @@ class FilterBuilder extends Builder
 	{
 		$this->orders[] = [
 			$field => strtolower($direction) == 'asc' ? 'asc' : 'desc',
+		];
+
+		return $this;
+	}
+
+	/**
+	 * 距离远近
+	 * @param string $field
+	 * @param string $direction
+	 * @return $this|Builder
+	 */
+	public function orderGeoDistanceBy($field, $points, $direction = 'asc', $unit = 'km', $distance_type = 'arc')
+	{
+		$this->orders[] = [
+			"_geo_distance" => [
+				$field => $points,
+				"order" => strtolower($direction) == 'asc' ? 'asc' : 'desc',
+				"unit" => $unit,
+				"distance_type" => $distance_type
+			]
 		];
 
 		return $this;
